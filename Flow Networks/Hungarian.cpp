@@ -1,5 +1,5 @@
 
-//Max flow min cost algorithm
+//Maximum bipartite matching
 
 typedef ll th;
 const th INF = 1e18;
