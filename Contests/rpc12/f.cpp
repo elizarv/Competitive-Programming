@@ -48,8 +48,8 @@ int main() {
   ios::sync_with_stdio(0);
   cin.tie(0);
 
-  int k;
-  cin >> n >> k;
+  int K;
+  cin >> n >> K;
 
 
   forn(i, 0, n){
@@ -58,7 +58,6 @@ int main() {
   }
 
   memset(dp, -1, sizeof dp);
-  cout << f(0, k) << endl;
-
+  cout << f(0, K) << endl;
   
 }
