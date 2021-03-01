@@ -15,37 +15,24 @@ typedef pair<int, int> pii;
 const int MX = 1e6 + 5, inf = 1e9;
 const int LG = 30;
 vector<pii> G[MX];
-vector<int> dep;
-int PAR[LG][MX], rmq[LG][MX];
+int dep[MX];
+int par[LG][MX], rmq[LG][MX];
 int n, m;
 
-void pre (int u, int p, int d) {
-  dep[u] = d;
-  PAR[0][u] = p;
-  for (auto &ed: G[u]) {
-    int v = ed.F;
-    int w = ed.S;
-    if (v != p) {
-      rmq[0][v] = w;
-      pre(v, u, d + 1);
-    }
-  }
-}
-
-void build () {
-  dep.assign(n, -1);
-  forn (i, 0, n) {
-    if (dep[i] == -1) {
-			rmq[0][i] = inf;
-      pre(i, i, 0);
-    }
-  }
-  forn (j, 0, LG - 1) {
-    forn (i, 0, n) {
-      PAR[j + 1][i] = PAR[j][PAR[j][i]];
-			rmq[j+1][i] = min(rmq[j][ PAR[j][i] ], rmq[j][i]);
-    }
-  }
+void dfs(int u, int p, int d, int w){
+	dep[u] = d;
+	par[0][u] = p;
+	rmq[0][u] = w;
+	for(int j = 1; j < LG; j++){
+		par[j][u] = par[j-1][par[j-1][u]];
+		rmq[j][u] = min(rmq[j-1][u], rmq[j-1][par[j-1][u]]);
+	}
+	for(auto &ed: G[u]){
+		int v = ed.F;
+		int val = ed.S;
+		if(v == p)continue;
+		dfs(v, u, d+1, val);
+	}
 }
 
 int lca (int u, int v) {
@@ -55,15 +42,15 @@ int lca (int u, int v) {
   for (int i = LG - 1; i >= 0; i--) {
     if (dif & (1 << i)) {
 			ans = min(ans, rmq[i][u]);
-      u = PAR[i][u];
+      u = par[i][u];
     }
   }
   if (u == v) return ans;
   for (int i = LG - 1; i >= 0; i--) {
-    if (PAR[i][u] != PAR [i][v]) {
+    if (par[i][u] != par[i][v]) {
 			ans = min({ans, rmq[i][u], rmq[i][v]});
-      u = PAR[i][u];
-      v = PAR[i][v];
+      u = par[i][u];
+      v = par[i][v];
     }
   } 
   return min({ans, rmq[0][u], rmq[0][v]});
@@ -118,6 +105,7 @@ struct dsu {
 
 int main() {
   ios::sync_with_stdio(0); cin.tie(0);
+  // g++ -pthread -Wall -Wshadow -std=c++17 -o main h.cpp && ./main < h.txt
 
   cin >> _n;
 
@@ -149,6 +137,7 @@ int main() {
   }
   cnt++;
 
+  //dist
   while(q.size()){
     int x = q.front().F;
     int y = q.front().S;
@@ -164,6 +153,7 @@ int main() {
     }
   }
 
+  //comp
   forn(i, 0, _n){
     forn(j, 0, _n){
       if(comp[i][j] == -1){
@@ -173,6 +163,7 @@ int main() {
     }
   }
 
+  //make g
   forn(i, 0, _n){
     forn(j, 0, _n){
       forn(k, 0, 4){
@@ -203,7 +194,7 @@ int main() {
   }
 
   n = cnt;
-  build();
+  dfs(0, 0, 0, inf);
   int _m; cin >> _m;
   int ax, ay, bx, by;
   forn(i, 0, _m){
