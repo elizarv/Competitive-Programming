@@ -17,7 +17,7 @@ pt inter(halfplane& h1, halfplane& h2){
     return h1.p + (h1.pq * alpha);
 }
 
-
+// intersection of halfplanes
 vector<pt> intersect(vector<halfplane>& b){
     vector<pt> box = { {inf, inf}, {-inf, inf}, {-inf, -inf}, {inf, -inf} };
     for(int i = 0; i < 4; i++){
